@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Jobs · gCNV Baseline Studio{% endblock %}
+{% block content %}
+<section class="project-hero jobs-hero">
+  <div><p class="eyebrow">CENTRO DE EJECUCIÓN <span></span> WORKFLOWS LOCALES</p><h1>Jobs</h1><p class="hero-copy">Status of the cola, runs activas e history recent.</p><p class="worker-indicator {{ 'online' if worker_online else 'offline' }}"><strong>{{ 'Worker active' if worker_online else 'Worker stopped' }}</strong> · limit {{ max_concurrent }} workflows · presupuesto {{ worker_cpus }} CPU / {{ worker_memory }}</p></div>
+  <button class="button secondary refresh-jobs" type="button" onclick="window.location.reload()">↻ Actualizar</button>
+</section>
+{% if queued and not worker_online %}<section class="panel worker-warning"><strong>The queue is paused.</strong> Hay jobs pending, pero not is detecta the worker. Arráncalo with <code>flask --app run.py work</code>.</section>{% endif %}
+
+{% macro job_card(job) %}
+<div class="job-entry job-board-entry" data-job-id="{{ job.id }}" data-status-url="{{ url_for('main.job_status', job_id=job.id) }}" data-log-url="{{ url_for('main.job_log', job_id=job.id) }}" data-log-offset="0">
+  <div class="job-row">
+    <span class="job-dot {{ job.status }}"></span>
+    <div class="job-name"><strong>{{ job.workflow|replace('_', ' ')|title }} · {{ job.project.name }}</strong><small>{{ job.created_at.strftime('%Y-%m-%d %H:%M UTC') }} · {{ job.id }}</small></div>
+    <a class="project-jump" href="{{ url_for('main.project_detail', project_id=job.project_id) }}">Project ↗</a>
+    <span class="status-chip {{ job.status }} job-status">{{ job.status|replace('_', ' ') }}</span>
+    {% if job.status in ['queued', 'running'] %}<form method="post" action="{{ url_for('main.cancel_job', job_id=job.id) }}"><button class="cancel-job-button" type="submit">Cancelar</button></form>{% endif %}
+    {% if job.status in ['succeeded', 'succeeded_with_parse_warnings', 'failed', 'cancelled'] and job.workflow != 'model_validation' and (job.workflow != 'sample_qc' or job.id in retryable_qc_job_ids) %}<form method="post" action="{{ url_for('main.retry_job', job_id=job.id) }}"><button class="retry-job-button" type="submit">↻ Reejecutar</button></form>{% endif %}
+  </div>
+  {% if job.error_message %}<p class="job-board-error">{{ job.error_message }}</p>{% endif %}
+  <details class="live-log" {% if job.status in ['queued', 'running', 'cancel_requested'] %}open{% endif %}>
+    <summary><span>Job console</span><span class="log-live-label">{% if job.status == 'running' %}● EN DIRECTO{% else %}{{ job.status|replace('_', ' ')|upper }}{% endif %}</span></summary>
+    <div class="log-toolbar"><span>Nextflow and tool output</span><a class="download-log" href="{{ url_for('main.download_job_log', job_id=job.id) }}">↓ Download log</a></div>
+    <pre class="live-log-output">Loading log…</pre>
+  </details>
+</div>
+{% endmacro %}
+
+<section class="jobs-board-grid">
+  <article class="panel jobs-board-column running-column"><div class="panel-heading"><div><p class="eyebrow">ACTIVOS</p><h2>En run</h2></div><span class="count-pill">{{ running|length }}</span></div>
+    {% if running %}{% for job in running %}{{ job_card(job) }}{% endfor %}{% else %}<div class="empty-inline">No jobs are running.</div>{% endif %}
+  </article>
+  <article class="panel jobs-board-column queued-column"><div class="panel-heading"><div><p class="eyebrow">COLA LOCAL</p><h2>En cola</h2></div><span class="count-pill">{{ queued|length }}</span></div>
+    {% if queued %}{% for job in queued %}{{ job_card(job) }}{% endfor %}{% else %}<div class="empty-inline">No jobs are queued.</div>{% endif %}
+  </article>
+  <article class="panel jobs-board-column finished-column"><div class="panel-heading"><div><p class="eyebrow">HISTORIAL RECIENTE</p><h2>Finalizados</h2></div><span class="count-pill">{{ finished|length }}</span></div>
+    {% if finished %}{% for job in finished %}{{ job_card(job) }}{% endfor %}{% else %}<div class="empty-inline">No jobs have finished yet.</div>{% endif %}
+  </article>
+</section>
+{% endblock %}

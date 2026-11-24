@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Analysis BED · {{ project.name }} · gCNV Baseline Studio{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.project_detail', project_id=project.id) }}">← Project phases</a>
+{% set active_project_phase = 'bed' %}{% include 'project_phase_nav.html' %}
+<section class="project-hero">
+  <div><p class="eyebrow">PROYECTO BED <span></span> {{ project.reference_id }}</p><h1>{{ project.name }}</h1><p class="hero-copy">Created {{ project.created_at.strftime('%Y-%m-%d %H:%M UTC') }} · bundle {{ project.reference_bundle_version or 'without version' }}</p></div>
+  <div class="status-chip {{ project.status }}">{{ project.status|replace('_', ' ') }}</div>
+</section>
+
+{% if validation and validation.valid %}
+<section class="metric-grid">
+  <article class="metric-card"><span>INTERVALOS BED</span><strong>{{ '{:,}'.format(metrics.processed.interval_count if metrics else validation.metrics.interval_count) }}</strong><small>{% if metrics %}processed{% else %}original válidos{% endif %}</small></article>
+  <article class="metric-card"><span>BASES TOTALES</span><strong>{{ '{:,}'.format(metrics.processed.total_bases if metrics else validation.metrics.total_bases) }}</strong><small>{% if metrics %}interval list processed{% else %}suma of longitudes BED{% endif %}</small></article>
+  <article class="metric-card"><span>LONGITUD MEDIA</span><strong>{{ '{:.1f}'.format(metrics.processed.mean_interval_length if metrics else validation.metrics.mean_interval_length) }}</strong><small>bp per interval</small></article>
+  <article class="metric-card"><span>GC MEDIANO</span><strong>{% if metrics and metrics.gc.summary.median is not none %}{{ '{:.1%}'.format(metrics.gc.summary.median) }}{% else %}—{% endif %}</strong><small>intervals annotated</small></article>
+</section>
+{% if metrics %}
+<section class="panel results-panel">
+  <div class="panel-heading"><div><p class="eyebrow">BED ANALYSIS</p><h2>Design characteristics</h2><small class="metrics-generated-at">Último analysis with metrics: {{ metrics_job.finished_at.strftime('%Y-%m-%d %H:%M UTC') if metrics_job and metrics_job.finished_at else 'fecha unavailable' }}{% if metrics_job %} · job {{ metrics_job.id[:10] }}{% endif %}</small></div><span class="status-chip succeeded">annotations available · {{ metrics.annotation_count }}</span></div>
+  {% if analysis_locked %}<div class="analysis-accepted-banner"><div><strong>Analysis accepted · configuration locked</strong><small>Padding {{ accepted_analysis.padding }} bp · bin length {{ accepted_analysis.bin_length }} bp</small></div><a class="button primary" href="{{ url_for('main.project_bams', project_id=project.id) }}">Continue to BAM upload <span>→</span></a></div>
+  {% elif metrics_job and metrics_job.status in ['succeeded', 'succeeded_with_parse_warnings'] and not active_analysis %}<form method="post" action="{{ url_for('main.accept_interval_analysis', project_id=project.id) }}" class="analysis-accept-form"><span>¿Estás of acuerdo with this analysis and their parameters?</span><button class="button primary" type="submit">Accept and continue to BAM upload <span>→</span></button></form>{% endif %}
+  <div class="chart-grid">
+    <article class="chart-card"><div class="chart-title"><div><h3>Longitud of interval</h3><small>Distribution Original BED · bp</small></div></div><svg id="length-chart" viewBox="0 0 520 190" role="img" aria-label="Histograma of longitudes"></svg></article>
+    <article class="chart-card"><div class="chart-title"><div><h3>Distribution GC</h3><small>Proporción of GC per interval · 0–1</small></div></div><svg id="gc-histogram" viewBox="0 0 520 190" role="img" aria-label="Histograma of content GC"></svg></article>
+    <article class="chart-card"><div class="chart-title"><div><h3>Intervals per chromosome</h3><small>Original BED</small></div></div><svg id="chromosome-chart" viewBox="0 0 520 190" role="img" aria-label="Intervals per chromosome"></svg></article>
+    <article class="chart-card wide"><div class="chart-title"><div><h3>GC content by interval</h3><small>Hover in to point for view coordenadas and GC</small></div><label class="chromosome-filter">Chromosome<select id="gc-chromosome"><option value="">Todos</option></select></label></div><svg id="gc-chart" viewBox="0 0 1000 230" role="img" aria-label="GC content by interval"></svg></article>
+    {% if metrics.mappability.available %}<article class="chart-card wide"><div class="chart-title"><div><h3>Mappability per interval</h3><small>Same genomic order as the GC plot</small></div></div><svg id="mappability-interval-chart" viewBox="0 0 1000 210"></svg></article><article class="chart-card"><div class="chart-title"><div><h3>Distribution mappability</h3><small>Valores per interval · 0–1</small></div></div><svg id="mappability-chart" viewBox="0 0 520 190"></svg></article><article class="chart-card"><div class="chart-title"><div><h3>GC vs. mappability</h3><small>Cada point represents an interval</small></div></div><svg id="gc-mappability-chart" viewBox="0 0 520 190"></svg></article>{% endif %}
+    {% if metrics.segmental_duplication.available %}<article class="chart-card"><div class="chart-title"><div><h3>Duplicación segmentaria per interval</h3><small>Same genomic order as the GC plot</small></div></div><svg id="segmental-duplication-chart" viewBox="0 0 1000 210"></svg></article><article class="chart-card"><div class="chart-title"><div><h3>Distribution of duplicación</h3><small>Contenido per interval · 0–1</small></div></div><svg id="segmental-duplication-histogram" viewBox="0 0 520 190"></svg></article>{% endif %}
+  </div>
+  <div class="comparison-wrap interval-table-section">
+    <div class="interval-table-heading"><div><h3>Intervals, mappability, and GC content</h3><small>Filters can be combined; GC is shown as to percentage and mappability as to proportion from 0 to 1.</small></div><span id="interval-filter-count" class="count-pill"></span></div>
+    <div class="interval-filters" aria-label="Filtros of intervals">
+      <label>GC greater than X (%)<input id="filter-gc-min" type="number" min="0" max="100" step="0.1" placeholder="0–100"></label><button class="filter-clear" type="button" data-clear-filter="filter-gc-min">Remove</button>
+      <label>GC less than Y (%)<input id="filter-gc-max" type="number" min="0" max="100" step="0.1" placeholder="0–100"></label><button class="filter-clear" type="button" data-clear-filter="filter-gc-max">Remove</button>
+      {% if metrics.mappability.available %}<label>Mappability less than Z<input id="filter-map-max" type="number" min="0" max="1" step="0.01" placeholder="0–1"></label><button class="filter-clear" type="button" data-clear-filter="filter-map-max">Remove</button>{% endif %}
+      <button class="filter-clear clear-all-filters" type="button" id="clear-interval-filters">Clear filters</button>
+    </div>
+    <div class="table-scroll"><table class="comparison-table interval-table"><colgroup><col class="interval-col"><col class="gene-col"><col class="mappability-col"><col class="gc-col"></colgroup><thead><tr><th>Interval</th><th>Gene</th><th>Mappability</th><th>Contenido GC</th></tr></thead><tbody id="interval-table-body"></tbody></table></div>
+    <div class="interval-table-footer"><span id="interval-table-page"></span><div><button class="filter-clear" type="button" id="interval-page-prev">Previous</button><button class="filter-clear" type="button" id="interval-page-next">Siguiente</button></div></div>
+  </div>
+  <div class="comparison-wrap"><h3>Original vs. processed</h3><table class="comparison-table"><thead><tr><th>Métrica</th><th>Original BED</th><th>Procesado</th></tr></thead><tbody><tr><td>Número of intervals</td><td>{{ '{:,}'.format(metrics.original.interval_count) }}</td><td>{{ '{:,}'.format(metrics.processed.interval_count) }}</td></tr><tr><td>Bases totales</td><td>{{ '{:,}'.format(metrics.original.total_bases) }}</td><td>{{ '{:,}'.format(metrics.processed.total_bases) }}</td></tr><tr><td>Longitud mean</td><td>{{ '{:.1f}'.format(metrics.original.mean_interval_length) }} bp</td><td>{{ '{:.1f}'.format(metrics.processed.mean_interval_length) }} bp</td></tr><tr><td>Solapamientos BED detected</td><td>{{ metrics.original.overlap_warning_count }}</td><td>Intervals merged per PreprocessIntervals</td></tr></tbody></table></div>
+  <script id="bed-metrics-data" type="application/json">{{ metrics|tojson }}</script>
+</section>
+{% endif %}
+<section class="content-grid detail-grid">
+  <div class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">PREPARACIÓN DEL DISEÑO</p><h2>Interval analysis</h2></div><span class="step-number">NEXTFLOW · APPTAINER</span></div>
+    <p class="section-copy">PreprocessIntervals prepara the intervals and AnnotateIntervals calculates GC and the annotations available in the bundle.</p>
+    {% if analysis_locked %}<div class="notice"><span>✓</span><p>El analysis was accepted. Padding {{ accepted_analysis.padding }} bp and bin length {{ accepted_analysis.bin_length }} bp remain fixed for this cohort.</p></div>
+    {% elif active_analysis %}<div class="notice"><span>…</span><p>Ya there are to analysis queued or running. No can encolar otro until that termine.</p></div>
+    {% else %}<form method="post" action="{{ url_for('main.launch_bed_analysis', project_id=project.id) }}" class="analysis-form">
+      <label>Padding <span>bp</span><input type="number" name="padding" value="{{ metrics.parameters.padding if metrics else 0 }}" min="0" max="100000"></label>
+      <label>Bin length <span>bp · 0 disables binning</span><input type="number" name="bin_length" value="{{ metrics.parameters.bin_length if metrics else 0 }}" min="0" max="1000000"></label>
+      <button class="button primary" type="submit">{% if metrics %}Reanalizar intervals{% else %}Encolar analysis{% endif %} <span>→</span></button>
+    </form>{% endif %}
+    <div class="notice"><span>i</span><p>El filtered per coverage is runs more adelante with the read counts of the cohort; aquí is validan and anotan the intervals.</p></div>
+  </div>
+  <div class="panel file-panel">
+    <div class="panel-heading"><div><p class="eyebrow">ENTRADA REGISTRADA</p><h2>Original BED</h2></div><span class="file-badge">BED</span></div>
+    <div class="file-meta"><span class="meta-icon">▤</span><div><strong>{{ project.original_bed_filename }}</strong><small>SHA-256 · {{ project.original_bed_sha256[:16] }}…</small></div></div>
+    {% if validation.warnings %}<details class="warning-list"><summary>{{ validation.warnings|length }} warning(s) detected(s)</summary><ul>{% for warning in validation.warnings[:20] %}<li>Line {{ warning.line }}: {{ warning.message }}</li>{% endfor %}</ul></details>{% else %}<p class="success-line">✓ Sin overlaps ni misordering detected.</p>{% endif %}
+  </div>
+</section>
+
+<section class="panel jobs-panel">
+  <div class="panel-heading"><div><p class="eyebrow">HISTORIAL</p><h2>Ejecuciones of the project</h2></div><span class="count-pill">{{ jobs|length }} jobs</span></div>
+  {% if jobs %}<div class="job-list">{% for job in jobs %}<div class="job-entry" data-job-id="{{ job.id }}" data-status-url="{{ url_for('main.job_status', job_id=job.id) }}" data-log-url="{{ url_for('main.job_log', job_id=job.id) }}" data-log-offset="0"><div class="job-row"><span class="job-dot {{ job.status }}"></span><div class="job-name"><strong>{{ job.workflow|replace('_', ' ')|title }}</strong><small>{{ job.created_at.strftime('%Y-%m-%d %H:%M UTC') }} · {{ job.id[:10] }}</small></div><span class="status-chip {{ job.status }} job-status">{{ job.status }}</span>{% if job.error_message %}<small class="job-error">{{ job.error_message }}</small>{% endif %}{% if job.status in ['queued', 'running'] %}<form method="post" action="{{ url_for('main.cancel_job', job_id=job.id) }}"><button class="cancel-job-button" type="submit">Cancelar</button></form>{% endif %}</div><details class="live-log" {% if job.status in ['queued', 'running', 'cancel_requested'] %}open{% endif %}><summary><span>Job console</span><span class="log-live-label">{% if job.status == 'running' %}● EN DIRECTO{% else %}{{ job.status|upper }}{% endif %}</span></summary><div class="log-toolbar"><span>Nextflow and tool output</span><a class="download-log" href="{{ url_for('main.download_job_log', job_id=job.id) }}">↓ Download log</a></div><pre class="live-log-output">Loading log…</pre></details></div>{% endfor %}</div>{% else %}<div class="empty-inline">Aún have not ejecutado analysis for this project.</div>{% endif %}
+</section>
+{% else %}
+<section class="panel validation-panel"><p class="eyebrow">VALIDACIÓN BED</p><h2>El file needs corrections</h2><ul>{% for error in validation.errors %}<li>{% if error.line %}Line {{ error.line }}: {% endif %}{{ error.message }}</li>{% endfor %}</ul><a class="button secondary" href="{{ url_for('main.index') }}">Back</a></section>
+{% endif %}
+{% endblock %}

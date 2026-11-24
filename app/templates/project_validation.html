@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Validation of models · {{ project.name }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.project_detail', project_id=project.id) }}">← Project phases</a>
+{% set active_project_phase = 'validation' %}{% include 'project_phase_nav.html' %}
+<section class="project-hero"><div><p class="eyebrow">VALIDACIÓN EXTERNA · {{ project.name }}</p><h1>Validate to model COHORT</h1><p class="hero-copy">Upload casos independent, annotate their CNVs known and ejecútalos contra to model ya trained. Estas samples not is add to the cohort.</p></div><span class="status-chip">{{ samples|length }} sample(s)</span></section>
+{% if not models %}<section class="panel"><p class="notice">Para validate, first need to model COHORT completed.</p></section>{% endif %}
+<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">1 · CASOS DE VALIDACIÓN</p><h2>Add BAMs with BAI</h2><small>Los BAMs is validan contra the reference and the BED accepted of the project.</small></div></div>
+  {% if can_upload %}<form method="post" enctype="multipart/form-data" id="validation-bam-form" data-upload-session-url="{{ url_for('main.create_validation_upload_session', project_id=project.id) }}" action="{{ url_for('main.upload_validation_samples', project_id=project.id) }}" class="form-stack">
+    <label>Select BAMs and their indexes BAI<input type="file" name="alignment_files" accept=".bam,.bai" multiple required><small>Se emparejan per ID of sample: RB123.bam with RB123.bai or RB123.bam.bai.</small></label>
+    <button class="button primary" type="submit">Validate and save samples</button>
+  </form><section class="bam-transfer-panel" id="bam-transfer-panel" hidden aria-live="polite"><div class="transfer-heading"><strong id="bam-transfer-status">Preparando transfer…</strong><span id="bam-transfer-count"></span></div><progress id="bam-transfer-progress" max="100" value="0"></progress><div class="transfer-log" id="bam-transfer-log"></div></section>{% else %}<p class="batch-error">Falta the analysis BED accepted of the project.</p>{% endif %}
+</section>
+{% if samples %}<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">2 · CNVs CONOCIDAS</p><h2>Anota the CNVs of each sample</h2><small>Una CNV per line: <code>chr start end type</code>. Tipo: DEL, DUP or CNV.</small></div></div>
+  <div class="validation-sample-list">{% for row in samples %}<details class="validation-sample-card"><summary><strong>{{ row.sample.sample_id }}</strong><span>{{ row.known_cnvs|length }} CNV(s) annotated(s)</span></summary><form method="post" action="{{ url_for('main.save_validation_cnvs', project_id=project.id, sample_id=row.sample.id) }}" class="form-stack"><label>chr · start · end · type<textarea name="known_cnvs" rows="4" placeholder="chr1&#9;100000&#9;120000&#9;DEL&#10;chr7&#9;550000&#9;580000&#9;DUP">{% for cnv in row.known_cnvs %}{{ cnv.chrom }}&#9;{{ cnv.start }}&#9;{{ cnv.end }}&#9;{{ cnv.type }}{% if not loop.last %}&#10;{% endif %}{% endfor %}</textarea></label><button class="button secondary" type="submit">Save CNVs</button></form></details>{% endfor %}</div>
+</section>
+<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">3 · ANÁLISIS CASE</p><h2>Select samples and model</h2><small>GATK will run the model elegido in modo CASE for the samples selected.</small></div></div>
+  <form method="post" action="{{ url_for('main.launch_model_validation', project_id=project.id) }}" class="form-stack">
+    <label>Model COHORT<select name="model_run_id" required>{% for model in models %}<option value="{{ model.id }}">{{ model.name }} · {{ model.created_at.strftime('%Y-%m-%d %H:%M') }}</option>{% endfor %}</select></label>
+    <div class="validation-checkbox-list">{% for row in samples %}<label class="check-row"><input type="checkbox" name="sample_ids" value="{{ row.sample.id }}"><span>{{ row.sample.sample_id }} · {{ row.known_cnvs|length }} CNV(s) known</span></label>{% endfor %}</div>
+    <button class="button primary" type="submit" {% if not models %}disabled{% endif %}>Run validation</button>
+  </form>
+</section>{% endif %}
+{% if runs %}<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">HISTORIAL</p><h2>Validaciones ejecutadas</h2></div></div>
+  {% for run in runs %}<article class="validation-run-card"><div class="validation-run-heading"><div><strong>{{ summaries[run.id].model_name if summaries[run.id] else 'Validation of model' }}</strong><small>{{ run.created_at.strftime('%Y-%m-%d %H:%M UTC') }} · {{ run.id[:10] }}</small></div><span class="status-chip {{ run.status }}">{{ run.status|replace('_',' ') }}</span></div>
+    {% if summaries[run.id] %}{% set summary = summaries[run.id] %}<div class="metric-grid diagnostic-kpis"><article class="metric-card"><span>MUESTRAS</span><strong>{{ summary.sample_count }}</strong></article><article class="metric-card"><span>CNVs DETECTADAS</span><strong>{{ summary.cnv_detected_count }}</strong></article><article class="metric-card"><span>CNVs ANOTADAS</span><strong>{{ summary.known_cnv_count }}</strong></article><article class="metric-card"><span>DETECTADAS CON COINCIDENCIA</span><strong>{{ summary.matched_known_cnv_count }}</strong></article></div><small class="muted-copy">La correlation is Pearson between profiles of counts normalized per size of library and the median of profiles of the training, restricted to the intervals of the model.</small>
+    <div class="diagnostic-grid-two validation-diagnostic-grid">
+      <article><h3>Sample vs. variance unexplained</h3><small>Exp(log ψ), derived of the log(ψ) native of GermlineCNVCaller.</small><canvas class="diagnostic-chart validation-scatter" data-chart="sample-variance-{{ run.id }}"></canvas></article>
+      <article><h3>Depth global vs. variance unexplained</h3><small>GLOBAL_READ_DEPTH relative to Exp(log ψ).</small><canvas class="diagnostic-chart validation-scatter" data-chart="depth-variance-{{ run.id }}"></canvas></article>
+    </div>
+    <section class="validation-ploidy-section"><h3>Autosomas with cariotipo different of 2</h3><div class="table-scroll"><table class="diagnostic-table"><thead><tr><th>Sample</th><th>Chromosome</th><th>Ploidía</th><th>PLOIDY_GQ</th></tr></thead><tbody>{% for item in summary.autosomal_ploidy_exceptions %}<tr><td>{{ item.sample_id }}</td><td>{{ item.chrom }}</td><td>{{ item.ploidy }}</td><td>{{ item.gq if item.gq is not none else 'N/A' }}</td></tr>{% else %}<tr><td colspan="4">No is detectaron autosomas with ploidy different of 2 (or the output not is available).</td></tr>{% endfor %}</tbody></table></div></section>
+    <section class="validation-gc-section"><div class="panel-heading"><div><h3>Coverage relative to GC and bias learned</h3><small>GC of AnnotateIntervals; count original normalized per size of library; result denoised of PostprocessGermlineCNVCalls.</small></div><label>Sample<select data-gc-sample="{{ run.id }}">{% for sample in summary.samples %}<option value="{{ loop.index0 }}">{{ sample.sample_id }}</option>{% endfor %}</select></label></div>
+      <div class="diagnostic-grid-two"><article><h4>CollectReadCounts vs GC</h4><canvas class="diagnostic-chart validation-scatter" data-chart="gc-counts-{{ run.id }}"></canvas></article><article><h4>Denoised log₂ ratio vs GC</h4><canvas class="diagnostic-chart validation-scatter" data-chart="gc-denoised-{{ run.id }}"></canvas></article></div>
+      <article class="validation-bias-chart"><h4>Loadings of the factors of bias of GATK</h4><small>Loadings CASE mu_z_su per sample; describen factors latentes and not is interpretan as coeficientes GC.</small><canvas class="diagnostic-chart validation-scatter" data-chart="bias-loadings-{{ run.id }}"></canvas></article>
+      {% if summary.gc_curve_available %}<p class="muted-copy">Se found to curva GC publicada in the artifacts of the model; is sample per bin of the model.</p><canvas class="diagnostic-chart validation-scatter" data-chart="gc-curve-{{ run.id }}"></canvas>{% else %}<p class="muted-copy">El model not publica to curva GC separada recognized. Los paneles show the efecto observed in the counts and its result denoised; the loadings is presentan aparte for not atribuirles to interpretation GC that the artefacto not declara.</p>{% endif %}
+      <script type="application/json" id="validation-summary-{{ run.id }}">{{ {'summary': summary, 'validation_charts': validation_charts.get(run.id, {})}|tojson }}</script>
+    </section>
+    <div class="table-scroll"><table class="diagnostic-table"><thead><tr><th>Sample</th><th>CNVs detected</th><th>CNVs known</th><th>Coincidencias</th><th>Correlation with the model</th><th>Varianza exp(log ψ) derived</th><th>log(ψ) native</th><th>Global depth</th><th>Detalle</th></tr></thead><tbody>{% for sample in summary.samples %}<tr><td>{{ sample.sample_id }}</td><td>{{ sample.cnv_detected_count }}</td><td>{{ sample.known_cnv_count }}</td><td>{{ sample.matched_known_cnv_count }}</td><td>{{ '%.4f'|format(sample.model_correlation) if sample.model_correlation is not none else 'N/A' }}</td><td>{{ sample.sample_unexplained_variance_exp_log_psi_derived if sample.sample_unexplained_variance_exp_log_psi_derived is not none else 'N/A' }}</td><td>{{ sample.sample_unexplained_variance_log_psi if sample.sample_unexplained_variance_log_psi is not none else 'N/A' }}</td><td>{{ sample.global_read_depth if sample.global_read_depth is not none else 'N/A' }}</td><td><a href="{{ url_for('main.validation_sample_detail', project_id=project.id, run_id=run.id, sample_id=sample.sample_id) }}">Ver CNVs and log2 ratio →</a></td></tr>{% endfor %}</tbody></table></div>{% elif run.error_message %}<p class="batch-error">{{ run.error_message }}</p>{% else %}<p class="muted-copy">La validation is being ejecutando. <a href="{{ url_for('main.jobs_page') }}">Ver the job and its log →</a></p>{% endif %}
+  </article>{% endfor %}
+</section>{% endif %}
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const parse = id => { try { return JSON.parse(document.getElementById(id)?.textContent || '{}'); } catch (_) { return {}; } };
+  const draw = (canvas, points, xKey, yKey, xLabel, yLabel, category = false) => {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d'), width = 760, height = 300, p = 46;
+    canvas.width = width; canvas.height = height;
+    const valid = points.filter(row => Number.isFinite(row[xKey]) && Number.isFinite(row[yKey]));
+    ctx.clearRect(0, 0, width, height); ctx.font = '11px sans-serif'; ctx.fillStyle = '#53655a';
+    if (!valid.length) { ctx.fillText('Métrica unavailable in the outputs of this job.', p, 34); return; }
+    let xmin = category ? -0.5 : Math.min(...valid.map(row => row[xKey]));
+    let xmax = category ? Math.max(0.5, ...valid.map(row => row[xKey])) + 0.5 : Math.max(...valid.map(row => row[xKey]));
+    let ymin = Math.min(...valid.map(row => row[yKey])), ymax = Math.max(...valid.map(row => row[yKey]));
+    if (xmax === xmin) xmax = xmin + 1; if (ymax === ymin) { ymin -= 1; ymax += 1; }
+    const x = value => p + (value - xmin) / (xmax - xmin) * (width - 2 * p);
+    const y = value => height - p - (value - ymin) / (ymax - ymin) * (height - 2 * p);
+    ctx.strokeStyle = '#ccd5ce'; ctx.beginPath(); ctx.moveTo(p, p); ctx.lineTo(p, height-p); ctx.lineTo(width-p, height-p); ctx.stroke();
+    ctx.fillStyle = '#53655a'; ctx.fillText(yLabel, p, 16); ctx.fillText(xLabel, width-p-150, height-10);
+    valid.forEach(row => { const px = x(row[xKey]), py = y(row[yKey]); ctx.fillStyle = '#43865c'; ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI*2); ctx.fill(); if (row.sample_id) { ctx.fillStyle='#53655a'; ctx.fillText(row.sample_id.slice(0,18), px+5, py-5); } });
+  };
+  document.querySelectorAll('[id^="validation-summary-"]').forEach(script => {
+    const payload = parse(script.id), data = payload.summary || payload, charts = payload.validation_charts || {}, suffix = script.id.replace('validation-summary-', ''), samples = charts.samples || data.samples || [];
+    const variance = samples.map((row, index) => ({sample_id: row.sample_id, x: index, and: row.sample_unexplained_variance_exp_log_psi_derived}));
+    const categoryCanvas = document.querySelector(`[data-chart="sample-variance-${suffix}"]`);
+    draw(categoryCanvas, variance.map(row => ({sample_id:row.sample_id, x:row.x, and:row.and})), 'x','y','Samples','Exp(log ψ), derived',true);
+    draw(document.querySelector(`[data-chart="depth-variance-${suffix}"]`), samples.map(row => ({sample_id:row.sample_id, x:row.global_read_depth, and:row.sample_unexplained_variance_exp_log_psi_derived})), 'x','y','GLOBAL_READ_DEPTH','Exp(log ψ), derived');
+    const selector = document.querySelector(`[data-gc-sample="${suffix}"]`);
+    const renderSample = () => {
+      const sample = samples[Number(selector?.value || 0)] || {};
+      const points = sample.gc_coverage_points || [];
+      draw(document.querySelector(`[data-chart="gc-counts-${suffix}"]`), points.map(row=>({x:row.gc,y:row.count_per_million})), 'x','y','GC (AnnotateIntervals)','Counts per millón');
+      draw(document.querySelector(`[data-chart="gc-denoised-${suffix}"]`), points.map(row=>({x:row.gc,y:row.denoised_log2_ratio})), 'x','y','GC (AnnotateIntervals)','Denoised log₂ ratio');
+      const bias = sample.bias_factor_loadings || [];
+      draw(document.querySelector(`[data-chart="bias-loadings-${suffix}"]`), bias.map((value,index)=>({x:index,and:value})), 'x','y','Factor latente','mu_z_su');
+    };
+    selector?.addEventListener('change', renderSample); renderSample();
+    draw(document.querySelector(`[data-chart="gc-curve-${suffix}"]`), (charts.gc_curve || data.gc_curve || []).map(row=>({x:row.bin,and:row.value})), 'x','y','Bin GC','Parameter GATK');
+  });
+});
+</script>
+{% endblock %}

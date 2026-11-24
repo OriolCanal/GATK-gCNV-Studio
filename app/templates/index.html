@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Proyectos BED · gCNV Baseline Studio{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">WORKSPACE GENÓMICO <span></span> FASE 1</p>
+    <h1>Diseños BED,<br><em>listos for modelar.</em></h1>
+    <p class="hero-copy">Crea to project, validate their intervals relative when genoma reference and review the analysis before of incorporar samples.</p>
+  </div>
+  <div class="hero-stamp"><strong>01</strong><span>BED<br>DESIGN</span></div>
+</section>
+
+<section class="content-grid">
+  <div class="panel project-panel">
+    <div class="panel-heading"><div><p class="eyebrow">BIBLIOTECA</p><h2>Proyectos BED</h2></div><span class="count-pill">{{ projects|length }} projects</span></div>
+    {% if projects %}
+      <div class="project-list">
+        {% for project in projects %}
+        <a class="project-row" href="{{ url_for('main.project_detail', project_id=project.id) }}">
+          <span class="project-icon">{{ project.reference_id[-2:] }}</span>
+          <span class="project-name"><strong>{{ project.name }}</strong><small>{{ project.reference_id }}{% if project.reference_bundle_version %} · {{ project.reference_bundle_version }}{% endif %}</small></span>
+          <span class="status-chip {{ project.status }}">{{ project.status|replace('_', ' ') }}</span><span class="row-arrow">↗</span>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state"><span class="empty-glyph">⌁</span><strong>Tu espacio of trabajo is empty</strong><p>Crea the first project with to BED of panel or exoma.</p></div>
+    {% endif %}
+  </div>
+
+  <aside class="panel create-panel">
+    <div class="panel-heading"><div><p class="eyebrow">NUEVO PROYECTO</p><h2>Empezar with to BED</h2></div><span class="step-number">01 / 03</span></div>
+    <form action="{{ url_for('main.create_project') }}" method="post" enctype="multipart/form-data" class="form-stack">
+      <label>Name of the project<input type="text" name="name" maxlength="200" placeholder="p. ej. Panel hereditario v2" required></label>
+      <label>Genoma reference<select name="reference_id" required {% if not references %}disabled{% endif %}><option value="">Select to reference</option>{% for reference in references %}<option value="{{ reference.id }}">{{ reference.label }}{% if reference.bundle_version %} · {{ reference.bundle_version }}{% endif %}</option>{% endfor %}</select></label>
+      <label class="file-drop" for="bed_file"><span class="upload-glyph">↑</span><strong id="file-name">Arrastra or select to BED</strong><small>BED3 or upper · coordenadas 0-based</small><input id="bed_file" type="file" name="bed_file" accept=".bed" required></label>
+      {% if not references %}<p class="setup-note">Configura the paths FASTA, FAI and dict in <code>config/references.yaml</code> for habilitar referencias.</p>{% endif %}
+      <button class="button primary" type="submit" {% if not references %}disabled{% endif %}>Validate and crear project <span>→</span></button>
+    </form>
+    <p class="privacy-note"><span>●</span> El Original BED is retained without modificar.</p>
+  </aside>
+</section>
+<footer class="page-footer"><span>GATK gCNV · COHORT BASELINE BUILDER</span><span>WORKSPACE <b>LOCAL</b></span></footer>
+{% endblock %}

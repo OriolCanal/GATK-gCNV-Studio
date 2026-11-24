@@ -1,0 +1,10 @@
+{% set project_phases = get_project_phase_navigation(project) %}
+<nav class="project-phase-nav" aria-label="Navegación between phases of the project">
+  {% for phase in project_phases %}
+    {% if phase.available %}
+      <a class="project-phase-nav-link{% if active_project_phase == phase.key %} active{% endif %}" href="{{ phase.url }}"{% if active_project_phase == phase.key %} aria-current="page"{% endif %}>{{ phase.label }}</a>
+    {% else %}
+      <span class="project-phase-nav-link locked" aria-disabled="true" title="Complete first the phase previous">{{ phase.label }} <span aria-hidden="true">🔒</span></span>
+    {% endif %}
+  {% endfor %}
+</nav>

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Model COHORT · {{ project.name }} · gCNV Baseline Studio{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.project_detail', project_id=project.id) }}">← Project phases</a>
+{% set active_project_phase = 'models' %}{% include 'project_phase_nav.html' %}
+<section class="project-hero"><div><p class="eyebrow">MODELOS GATK gCNV · {{ project.name }}</p><h1>Models of cohort</h1><p class="hero-copy">Cada envío creates to snapshot independiente with its selection of samples, parameters and results.</p></div><span class="status-chip">{{ model_runs|length }} runs</span></section>
+<nav class="project-tabs"><a class="project-tab" href="{{ url_for('main.project_bams', project_id=project.id) }}">Cohort BAM</a><a class="project-tab" href="{{ url_for('main.project_sample_qc', project_id=project.id) }}">QC of samples</a><span class="project-tab active">Models COHORT</span></nav>
+
+<section class="panel model-runs-panel">
+  <div class="panel-heading"><div><p class="eyebrow">HISTORIAL DE EJECUCIONES</p><h2>Models and their status</h2><small>Open to run to view its metrics and artifacts.</small></div>{% if can_create_model %}<a class="button primary" href="#new-model-form">＋ Run new model</a>{% else %}<span class="button secondary disabled-action" title="Se requieren at least dos samples QC with read counts">＋ Nuevo model · requires 2 samples</span>{% endif %}</div>
+  {% if model_runs %}<div class="model-run-list">{% for run in model_runs %}{% set status_label = {'queued':'En cola','running':'En run','cancel_requested':'Cancelando','succeeded':'Finalizado','succeeded_with_parse_warnings':'Finalizado with warnings','failed':'Fallido','cancelled':'Cancelado'}.get(run.status, run.status|replace('_',' ')) %}
+    <article class="model-run-item" data-model-status-url="{{ url_for('main.job_status', job_id=run.job_id) }}"><a class="model-run-open" href="{{ url_for('main.project_model_detail', project_id=project.id, model_run_id=run.id) }}"><span class="model-run-main"><strong>{{ run.name }}</strong><small>{{ run.created_at.strftime('%Y-%m-%d %H:%M UTC') }} · {{ run.id[:10] }}</small><small class="model-run-error" {% if not run.error_message %}hidden{% endif %}>{{ run.error_message|truncate(220) if run.error_message else '' }}</small></span><span class="status-chip model-run-status {{ run.status }}">{{ status_label }}</span><span class="phase-arrow" aria-hidden="true">→</span></a><form method="post" action="{{ url_for('main.delete_failed_model', project_id=project.id, model_run_id=run.id) }}" class="delete-model-form" {% if run.status != 'failed' %}hidden{% endif %} onsubmit="return confirm('¿Eliminar the model failed and their files?')"><button class="delete-model-button" type="submit">Eliminar</button></form></article>
+  {% endfor %}</div>{% else %}<div class="empty-inline">Todavía not is ha ejecutado not model COHORT.</div>{% endif %}
+</section>
+
+<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">MUESTRAS DISPONIBLES</p><h2>{{ samples|length }} samples with read counts QC</h2></div><a class="button secondary" href="{{ url_for('main.project_sample_qc', project_id=project.id) }}">Review QC</a></div>
+  {% if samples %}<p class="muted-copy">Select the samples required for this run. La selection is congelará in the snapshot and not cambiará the selecciones of the models anteriores.</p>{% else %}<div class="empty-inline">No there are samples QC with read counts available. Los models existentes siguen accesibles below.</div>{% endif %}
+  {% for warning in model_warnings %}<div class="notice warning-notice"><span>!</span><p>{{ warning }}</p></div>{% endfor %}
+</section>
+
+{% if can_create_model %}
+<form id="new-model-form" method="post" action="{{ url_for('main.launch_cohort_model', project_id=project.id) }}" class="panel model-setup-form">
+  <input type="hidden" name="selection_form" value="1">
+  <div class="panel-heading"><div><p class="eyebrow">CONFIGURACIÓN VERSIONADA</p><h2>New model run</h2></div><span class="status-chip">GATK 4.7.0.0 · COHORT</span></div>
+  <fieldset class="model-sample-picker"><legend>Samples in this model</legend><div class="sample-picker-grid">{% for sample in samples %}<label class="sample-picker-option"><input type="checkbox" name="included_sample_ids" value="{{ sample.id }}" {% if sample.id in selected_sample_ids %}checked{% endif %}><span><strong>{{ sample.sample_id }}</strong><small>{{ sample.status }} · {{ sample.batch.name if sample.batch else 'without batch' }}</small></span></label>{% endfor %}</div><small>DetermineGermlineContigPloidy requires at least dos samples.</small></fieldset>
+  <div class="model-form-grid">
+    <label>Model name<input type="text" name="name" maxlength="200" placeholder="Ej. WES kit X · cohort 2026" autocomplete="off"></label>
+    <label>Base this revision on<select name="revision_of"><option value="">New model lineage</option>{% for prior in model_runs %}<option value="{{ prior.id }}" {% if revision_id == prior.id %}selected{% endif %}>{{ prior.name }} · {{ prior.status }} · {{ prior.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</option>{% endfor %}</select><small>Parameters for to queued run are never changed.</small></label>
+  </div>
+
+  <details class="model-parameter-group" open>
+    <summary><strong>Interval filtering</strong><span>FilterIntervals is optional</span></summary>
+    <label class="check-row"><input type="checkbox" name="filter_intervals" checked><span>Run FilterIntervals with read counts and statistics of the cohort</span></label>
+    <label>Conjunto reference for normalizar coverage<select name="coverage_normalization_scope"><option value="retained" selected>Intervals retained per FilterIntervals</option><option value="all">Todos the intervals original</option></select><small>Solo affects to the assessment. Factor per sample = median of coverage per base of the set elegido; not changes the model gCNV.</small></label>
+    <div class="filter-category">
+      <h3>1. Low-count filter</h3>
+      <p>Elimina regions with very pocos reads in to substantial proportion of samples. Usa the counts per interval of <code>CollectReadCounts</code>; are números of reads, not depth mean per base.</p>
+      <div class="model-form-grid">
+        <label title="Límite of count per sample. Un interval cuenta as low if the read count is estrictamente less than this value.">Low-count threshold ⓘ<input type="number" name="low_count_filter_count_threshold" value="5" min="0" max="100000"><small>GATK: <code>--low-count-filter-count-threshold</code></small></label>
+        <label title="Percentage of samples that must tener to count below of the threshold to exclude the interval. La proportion must ser estrictamente upper to this value.">Samples for low-count filtering (%) ⓘ<input type="number" name="low_count_filter_percentage_of_samples" value="90" min="0" max="100" step="0.1"><small>GATK: <code>--low-count-filter-percentage-of-samples</code></small></label>
+      </div>
+      <p><strong>Ejemplo:</strong> with threshold 10 and 100 samples, if 60 samples tienen fewer than 10 reads and the percentage is set to 50 %, GATK excludes the interval for the cohort. Si only 40 samples tienen fewer than 10 reads, retains it. Una sample aislada with low count is not sufficient.</p>
+      <p class="muted-copy"><strong>Utilidad:</strong> retirar regions that presentan coverage issues of forma systematic, for example due to poor capture or low mappability.</p>
+    </div>
+    <div class="filter-category">
+      <h3>2. Extreme-count filter</h3>
+      <p>Elimina regions with to exceptionally low or high coverage relative to the other intervals of each sample. Los percentiles are calculated <strong>separately in each sample, on their intervals</strong>; not comparan samples between sí for to same interval.</p>
+      <div class="model-form-grid">
+        <label title="Percentil lower acceptable of counts within of each sample. Con 1, an interval below P1 in that sample tiene to count extremely low.">Minimum extreme percentile ⓘ<input type="number" name="extreme_count_filter_minimum_percentile" value="1" min="0" max="100" step="0.1"><small>GATK: <code>--extreme-count-filter-minimum-percentile</code></small></label>
+        <label title="Percentil upper acceptable of counts within of each sample. Con 99, an interval above P99 in that sample tiene to count extremely high.">Maximum extreme percentile ⓘ<input type="number" name="extreme_count_filter_maximum_percentile" value="99" min="0" max="100" step="0.1"><small>GATK: <code>--extreme-count-filter-maximum-percentile</code></small></label>
+        <label title="Percentage of samples in the that the interval must fall below of the minimum percentile or above of the maximum for excluirlo. La proportion must ser estrictamente upper to this value.">Samples for extreme-percentile filtering (%) ⓘ<input type="number" name="extreme_count_filter_percentage_of_samples" value="90" min="0" max="100" step="0.1"><small>GATK: <code>--extreme-count-filter-percentage-of-samples</code></small></label>
+      </div>
+      <p>Con minimum percentile 1 and maximum 99, the acceptable range of each sample va of P1 to P99. Un interval can ser extreme per below or per arriba. Por example, if remains outside of ese range in 95 of 100 samples and the percentage is set to 90 %, GATK lo excludes; if remains outside in exactly 90, not lo excludes per this criterio.</p>
+      <p class="muted-copy"><strong>Esquema conceptual:</strong> counts low extreme &lt; P1 · range acceptable P1–P99 · counts high extreme &gt; P99. Los percentiles describen the distribution of intervals within of to sample; the threshold of samples decide if the patrón is suficientemente consistente between the cohort.</p>
+    </div>
+  </details>
+
+  <details class="model-parameter-group" open>
+    <summary><strong>Ploidy priors</strong><span>Una fila per contig · probabilidades per fila = 1</span></summary>
+    <p>La plantilla asigna ploidías 0–4 per contig: prior autosómico centrado in 2 and priors equilibrados for 1/2 in X and 0/1 in Y. Ajusta the table to the cariotipos expected and when design of the cohort before of run.</p>
+    <label>Tabla TSV <textarea name="contig_ploidy_priors" rows="12" spellcheck="false" required>{{ default_ploidy_priors }}</textarea></label>
+    <div class="model-form-grid">
+      <label>Mean bias SD<input type="number" name="mean_bias_standard_deviation" value="0.01" min="0" step="any"></label>
+      <label>Global ψ scale<input type="number" name="global_psi_scale" value="0.001" min="0" step="any"></label>
+      <label>Sample ψ scale<input type="number" name="sample_psi_scale" value="0.0001" min="0" step="any"></label>
+    </div>
+  </details>
+
+  <details class="model-parameter-group" open>
+    <summary><strong>GermlineCNVCaller</strong><span>Parameters permitidos for GATK 4.7.0.0</span></summary>
+    <div class="model-form-grid">
+      <label>Copy number maximum<input type="number" name="max_copy_number" value="5" min="1" max="20"></label>
+      <label>Bias factors máximos<input type="number" name="max_bias_factors" value="5" min="0" max="100"></label>
+      <label>Épocas máximas<input type="number" name="max_training_epochs" value="50" min="1" max="10000"></label>
+      <label>Épocas mínimas<input type="number" name="min_training_epochs" value="10" min="0" max="10000"></label>
+      <label>Iteraciones of calling<input type="number" name="max_calling_iters" value="10" min="0" max="10000"></label>
+      <label>Prior p-active<input type="number" name="p_active" value="0.01" min="0" max="1" step="any"></label>
+      <label>Prior p-alt<input type="number" name="p_alt" value="0.000001" min="0" max="1" step="any"></label>
+      <label>SNR averaging window<input type="number" name="convergence_snr_averaging_window" value="500" min="1" max="100000"></label>
+      <label>SNR countdown window<input type="number" name="convergence_snr_countdown_window" value="10" min="0" max="100000"></label>
+      <label>SNR trigger threshold<input type="number" name="convergence_snr_trigger_threshold" value="0.1" min="0" step="any"></label>
+      <label>Nivel of details of the caller<select name="verbosity"><option value="DEBUG" selected>DEBUG · metrics of fit</option><option value="INFO">INFO · log reducido</option></select><small>GATK can registrar epochs and convergence only with DEBUG.</small></label>
+    </div>
+  </details>
+  <div class="notice"><span>i</span><p>GATK requires at least dos samples required for inferir to model ploidy in modo COHORT. No is impone to threshold universal recomendado per size of cohort; check homogeneidad and potencia for tu design. La cola retains read counts, priors, parameters efectivos, reference, intervals and checksums as snapshot of this run.</p></div>
+  <div class="form-actions"><button class="button primary" type="submit">Save snapshot and queue →</button></div>
+</form>
+{% endif %}
+
+{% endblock %}

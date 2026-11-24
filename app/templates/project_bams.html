@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Samples and QC · {{ project.name }} · gCNV Baseline Studio{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.project_detail', project_id=project.id) }}">← Project phases</a>
+{% set active_project_phase = 'bams' %}{% include 'project_phase_nav.html' %}
+<section class="project-hero">
+  <div><p class="eyebrow">FASE 2 · CARGA POR LOTES Y QC</p><h1>{{ project.name }}</h1><p class="hero-copy">Todos the BAMs is validan contra the intervals and the reference accepted before of entrar in the cola.</p></div>
+  <span class="status-chip succeeded">{{ project.reference_id }} · configuration fijada</span>
+</section>
+<section class="panel bam-phase-panel">
+  <div class="panel-heading"><div><p class="eyebrow">INTERVALOS DE LA COHORTE</p><h2>Accepted configuration</h2></div><a class="button secondary" href="{{ url_for('main.project_bed_analysis', project_id=project.id) }}">View BED metrics <span>↗</span></a></div>
+  <div class="accepted-parameters">
+    <article><span>PADDING</span><strong>{{ accepted_analysis.padding }} bp</strong></article>
+    <article><span>BIN LENGTH</span><strong>{{ accepted_analysis.bin_length }} bp</strong></article>
+    <article><span>ANÁLISIS</span><strong>{{ (accepted_analysis.job_id or '')[:12] }}</strong></article>
+    <article><span>REFERENCIA</span><strong>{{ accepted_analysis.reference_id }} · {{ accepted_analysis.reference_bundle_version }}</strong></article>
+  </div>
+</section>
+
+<nav class="project-tabs" aria-label="Phases of samples">
+  <a class="project-tab active" href="{{ url_for('main.project_bams', project_id=project.id) }}">Cohort BAM</a>
+  {% if cohort_locked %}<a class="project-tab" href="{{ url_for('main.project_sample_qc', project_id=project.id) }}">QC of samples</a>{% endif %}
+</nav>
+
+{% if cohort_locked %}
+<section class="panel"><div class="notice duplicates-notice"><span>🔒</span><p><strong>The list is closed for this run.</strong> El last QC cubre {{ cohort_state.sample_ids|length }} samples. <a href="{{ url_for('main.project_sample_qc', project_id=project.id) }}">Go to sample QC →</a></p></div>{% if qc_job and qc_job.status in ['succeeded', 'succeeded_with_parse_warnings'] %}<form method="post" action="{{ url_for('main.reopen_project_bams', project_id=project.id) }}"><button class="button secondary" type="submit">Add to new batch of samples <span>＋</span></button></form>{% endif %}</section>
+{% else %}
+<section class="panel batch-form-panel">
+  <div class="panel-heading"><div><p class="eyebrow">CONSTRUIR COHORTE</p><h2>Add BAMs</h2><small>La upload only add samples validadas; not inicia the QC. Puedes back to add other BAMs.</small></div><span class="count-pill">copy files or use server paths</span></div>
+  <form class="form-stack batch-form" id="bam-batch-form" method="post" enctype="multipart/form-data" action="{{ url_for('main.create_bam_batch', project_id=project.id) }}" data-upload-session-url="{{ url_for('main.create_bam_upload_session', project_id=project.id) }}">
+    <label>Almacenamiento
+      <select name="storage_mode" id="bam-storage-mode"><option value="copy">Copy BAM and BAI files to project storage</option><option value="symlink">Use existing server paths (symlink)</option></select>
+    </label>
+    <div id="bam-copy-fields" class="bam-input-mode">
+      <label>Ficheros BAM and their indexes BAI<input type="file" name="alignment_files" accept=".bam,.bai" multiple required><small>Select BAMs and BAIs juntos in this selector. Se emparejan automatically per sample ID; is admiten indexes sample.bam.bai and sample.bai. El ID is extrae of the parte previous when first point: RB44312.bqsr.bam → RB44312.</small></label>
+    </div>
+    <div id="bam-symlink-fields" class="bam-input-mode" hidden>
+      <label>Rutas of BAM in the server<textarea name="server_bams" rows="5" placeholder="/ngs-data/bams/RB44312.bqsr.bam&#9;/ngs-data/bams/RB44312.bqsr.bam.bai"></textarea><small>Una sample per line: ruta BAM and, optionally, ruta BAI in to segunda columna separada per tabulador. El ID is toma of the parte previous when first point of the BAM (RB44312.bqsr.bam → RB44312). Raíces allowed: {% for root in allowed_roots %}<code>{{ root }}</code>{% if not loop.last %}, {% endif %}{% else %}none configured{% endfor %}</small></label>
+    </div>
+    <div class="notice duplicates-notice"><span>!</span><p><strong>Requirement:</strong> the reads duplicates must estar marked previously in the BAMs. La application not the check per ti. También is requires BAM sorted per coordenadas, its BAI and to single value SM that matches with the sample ID. No is aceptan CRAM. {% if max_upload_mb %}Máximo configurado per request: {{ max_upload_mb|int }} MB.{% else %}Flask not limits the size total of the request; the storage available and the proxy web siguen apply their limits.{% endif %}</p></div>
+    <button class="button primary" type="submit">Validate and add BAMs to the cohort <span>→</span></button>
+  </form>
+  <section class="bam-transfer-panel" id="bam-transfer-panel" hidden aria-live="polite">
+    <div class="transfer-heading"><strong id="bam-transfer-status">Preparando transfer…</strong><span id="bam-transfer-count"></span></div>
+    <progress id="bam-transfer-progress" max="100" value="0"></progress>
+    <div class="transfer-log" id="bam-transfer-log"></div>
+  </section>
+</section>
+{% if pending_sample_count %}
+<section class="panel cohort-launch-panel"><div class="panel-heading"><div><p class="eyebrow">QC DE MUESTRAS NUEVAS</p><h2>{{ pending_sample_count }} sample(s) pending</h2><small>Solo is ejecutarán the collectors for the new samples. Al finish, is recalculate correlation, outliers, PCA and clustering with all the samples analyzed.</small></div></div><form method="post" action="{{ url_for('main.analyze_project_bams', project_id=project.id) }}"><button class="button primary" type="submit">Close batch and analyze new samples <span>→</span></button></form></section>
+{% elif cohort_state.sample_ids %}<section class="panel cohort-launch-panel"><p class="notice">No there are samples new pending of QC. Las metrics current of the cohort siguen available in the tab QC.</p>{% if cohort_state.roster_opened_at %}<form method="post" action="{{ url_for('main.cancel_reopen_project_bams', project_id=project.id) }}"><button class="button secondary" type="submit">Cancel and close the empty batch</button></form>{% endif %}</section>
+{% endif %}
+{% endif %}
+
+<section class="panel batches-panel">
+  <div class="panel-heading"><div><p class="eyebrow">HISTORIAL</p><h2>Lotes and samples</h2></div><span class="count-pill">{{ batches|length }} batch(s)</span></div>
+  {% if batches %}
+    {% for batch in batches %}
+    {% set batch_job = batch_jobs.get(batch.job_id) %}
+    {% set missing_target_metrics = namespace(value=false) %}
+    {% for qc_sample in batch.samples %}{% if not (sample_metrics.get(qc_sample.id, {}).get('target_coverage')) %}{% set missing_target_metrics.value = true %}{% endif %}{% endfor %}
+    <details class="batch-card" {% if loop.first %}open{% endif %}{% if batch_job and batch_job.status in ['queued', 'running', 'cancel_requested'] %} data-qc-status-url="{{ url_for('main.job_status', job_id=batch_job.id) }}"{% endif %}>
+      {% set retryable = batch_job and (batch_job.status in ['failed', 'cancelled', 'succeeded_with_parse_warnings'] or (batch_job.status == 'succeeded' and missing_target_metrics.value) or (batch_job.status in ['running', 'cancel_requested'] and batch_job.finished_at)) %}
+      <summary><span class="batch-title"><strong>{{ batch.name }}</strong><small>{{ batch.samples|length }} sample(s) · {{ batch.created_at.strftime('%Y-%m-%d %H:%M') }}</small></span><span class="status-chip {{ batch.status }}">{{ batch.status }}</span></summary>
+      {% if batch.error_message %}<p class="batch-error">{{ batch.error_message }}</p>{% endif %}
+      {% if batch.job_id %}<div class="batch-actions"><a class="batch-job-link" href="{{ url_for('main.jobs_page') }}">Ver log of the workflow QC →</a></div>{% endif %}
+      {% if retryable %}<form method="post" action="{{ url_for('main.retry_bam_batch_qc', project_id=project.id, batch_id=batch.id) }}" class="batch-actions"><button class="button secondary" type="submit">Reejecutar QC of this batch ↻</button><small>Se volverán to analyze the samples of the batch with the configuration current of the workflow.</small></form>{% endif %}
+      <div class="table-scroll"><table class="comparison-table sortable-filterable-table"><thead><tr><th title="Identificador of the sample, taken of the name of the BAM.">Sample</th><th title="Resultado of the processing QC of this sample.">Status QC</th><th title="Sample name declared in the read groups of the BAM.">Read groups SM</th><th title="Percentage of bases target with coverage less of 30X (CollectHsMetrics).">% bases &lt;30X</th><th title="Percentage of bases target with coverage less of 100X (CollectHsMetrics).">% bases &lt;100X</th><th title="Coverage mean per base in the regions target.">Coverage mean</th><th title="Factor of uniformity: less suele indicate to coverage more uniforme.">FOLD_80_BASE_PENALTY</th><th title="Media of correlation of Pearson between profiles of counts normalized per size of library, excluyendo intervals of chr X/Y; values cercanos to 1 indicate coberturas globales more similares.">SAMPLE_COVERAGE_CORRELATION</th><th title="Desviaciones robust below the median of correlation of the cohort. ≥3 indicates review, not exclusion automatic.">COHORT_OUTLIER_SCORE</th><th title="Errores or issues of validation of the BAM.">Error / validation</th><th>Action</th></tr></thead><tbody>
+      {% for sample in batch.samples %}{% set metrics = sample_metrics.get(sample.id, {}) %}{% set hs = metrics.get('collect_hs_metrics') or {} %}{% set target = metrics.get('target_coverage') or {} %}{% set flag = metrics.get('flagstat') or {} %}{% set cohort = cohort_metrics.get(sample.sample_id, {}) %}
+        <tr>
+          <td>{{ sample.sample_id }}</td>
+          <td><span class="status-chip {{ sample.status }}">{{ sample.status }}</span></td>
+          <td>{{ sample.read_group_sm }}</td>
+          <td>{{ ('%.2f'|format(target.get('bases_below_30x_pct')) ~ '%') if target.get('bases_below_30x_pct') is number else '—' }}</td>
+          <td>{{ ('%.2f'|format(target.get('bases_below_100x_pct')) ~ '%') if target.get('bases_below_100x_pct') is number else '—' }}</td>
+          <td>{{ '%.2f'|format(hs.get('mean_target_coverage')) if hs.get('mean_target_coverage') is number else '—' }}</td>
+          <td>{{ '%.3f'|format(hs.get('fold_80_base_penalty')) if hs.get('fold_80_base_penalty') is number else '—' }}</td>
+          <td>{{ '%.4f'|format(cohort.get('sample_coverage_correlation')) if cohort.get('sample_coverage_correlation') is not none else '—' }}</td>
+          <td>{{ '%.2f'|format(cohort.get('cohort_outlier_score')) if cohort.get('cohort_outlier_score') is not none else '—' }}</td>
+          <td>
+            {% if sample.error_message %}{{ sample.error_message }}
+            {% elif sample.validation_report and ('ERROR:' in sample.validation_report or 'WARNING:' in sample.validation_report) %}
+              <details class="validation-details"><summary>Validation issues</summary><pre>{{ sample.validation_report }}</pre></details>
+            {% else %}—{% endif %}
+            {% if flag %}<details class="validation-details"><summary title="Estadísticas of reads calculated per GATK FlagStat">FlagStat</summary><small><span title="Percentage of reads marked as mapped.">Mapeadas:</span> {{ '%.2f'|format(flag.get('mapped_reads_pct')) ~ '%' if flag.get('mapped_reads_pct') is number else '—' }} · <span title="Percentage marked as duplicate in the BAM.">Duplicadas:</span> {{ '%.2f'|format(flag.get('duplicate_reads_pct')) ~ '%' if flag.get('duplicate_reads_pct') is number else '—' }} · <span title="Percentage of pairs that cumplen the criterio of alineamiento correct of FlagStat.">En pairs proper:</span> {{ '%.2f'|format(flag.get('properly_paired_reads_pct')) ~ '%' if flag.get('properly_paired_reads_pct') is number else '—' }} · <span title="Percentage of reads with the flag of control of quality activado.">QC-failed:</span> {{ '%.2f'|format(flag.get('qc_failed_reads_pct')) ~ '%' if flag.get('qc_failed_reads_pct') is number else '—' }}</small></details>{% endif %}
+          </td>
+          <td>{% if sample.id in deletable_sample_ids %}<form method="post" action="{{ url_for('main.delete_project_bam', project_id=project.id, sample_id=sample.id) }}" onsubmit="return confirm('¿Remove this sample of the cohort? Se recalculará the summary QC.');"><button class="filter-clear" type="submit">Remove</button></form>{% elif sample.id in modeled_sample_ids %}<span title="La sample forma parte of to selection saved of model">Incluida in model</span>{% elif active_qc %}<span title="Espera to that termine the QC">QC in progress</span>{% else %}<span>No available</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody></table></div>
+    </details>
+    {% endfor %}
+  {% else %}<div class="empty-state"><span class="empty-glyph">◌</span><strong>No BAM batches yet</strong><p>Valida the first set of samples with the form previous.</p></div>{% endif %}
+</section>
+{% endblock %}

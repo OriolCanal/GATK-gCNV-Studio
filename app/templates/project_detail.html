@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.name }} · Project · gCNV Baseline Studio{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.index') }}">← All projects</a>
+{% set active_project_phase = 'overview' %}{% include 'project_phase_nav.html' %}
+<section class="project-hero project-dashboard-hero">
+  <div><p class="eyebrow">WORKSPACE DE PROYECTO · {{ project.reference_id }}</p><h1>{{ project.name }}</h1><p class="hero-copy">BED · {{ project.original_bed_filename }} · bundle {{ project.reference_bundle_version or 'without version' }}</p></div>
+  <span class="status-chip {{ project.status }}">{{ project.status|replace('_',' ') }}</span>
+</section>
+
+<section class="panel project-phase-panel">
+  <div class="panel-heading"><div><p class="eyebrow">FLUJO DEL PROYECTO</p><h2>Phases</h2><small>Las phases is unlock when their requirements previos are complete.</small></div><span class="count-pill">{{ phases|length }} phases</span></div>
+  <div class="project-phase-list">
+    {% for phase in phases %}
+      {% if phase.url %}<a class="project-phase-card phase-{{ phase.status }}" href="{{ phase.url }}">{% else %}<article class="project-phase-card phase-{{ phase.status }}" aria-disabled="true">{% endif %}
+        <span class="phase-number">{{ phase.number }}</span>
+        <div class="phase-copy"><div class="phase-heading"><h3>{{ phase.title }}</h3><span class="phase-state">{{ phase.label }}</span></div><p>{{ phase.description }}</p></div>
+        <span class="phase-arrow">{% if phase.url %}→{% else %}🔒{% endif %}</span>
+      {% if phase.url %}</a>{% else %}</article>{% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="project-dashboard-grid">
+  <article class="panel dashboard-shortcut">
+    <div class="panel-heading"><div><p class="eyebrow">FASE 1</p><h2>Design of intervals</h2></div><span class="file-badge">BED</span></div>
+    {% if validation and validation.valid %}<p class="success-line">✓ BED válido{% if accepted_analysis %} · analysis accepted{% elif bed_complete %} · analysis available{% endif %}</p>{% else %}<p class="muted-copy">El BED needs review before of start the analysis.</p>{% endif %}
+    <a class="button secondary" href="{{ url_for('main.project_bed_analysis', project_id=project.id) }}">Open analysis BED →</a>
+  </article>
+  <article class="panel dashboard-shortcut">
+    <div class="panel-heading"><div><p class="eyebrow">FASE 3</p><h2>Models of cohort</h2></div><span class="count-pill">{{ model_runs|length }}</span></div>
+    <p class="muted-copy">Cada model retains their propias samples, priors, parameters and outputs.</p>
+    {% if phases[2].url %}<a class="button primary" href="{{ url_for('main.project_models_page', project_id=project.id) }}">Ver models / add →</a>{% else %}<span class="button secondary disabled-action">Bloqueado until completar QC</span>{% endif %}
+  </article>
+</section>
+
+{% if model_runs %}<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">HISTORIAL DE MODELOS</p><h2>Models COHORT creados</h2></div><a class="button secondary" href="{{ url_for('main.project_models_page', project_id=project.id) }}">All models →</a></div>
+  <div class="model-run-list">{% for run in model_runs[:5] %}<a class="model-run-row" href="{{ url_for('main.project_model_detail', project_id=project.id, model_run_id=run.id) }}"><span><strong>{{ run.name }}</strong><small>{{ run.created_at.strftime('%Y-%m-%d %H:%M UTC') }} · {{ run.id[:10] }}</small></span><span class="status-chip {{ run.status }}">{{ run.status|replace('_',' ') }}</span></a>{% endfor %}</div>
+</section>{% endif %}
+{% endblock %}

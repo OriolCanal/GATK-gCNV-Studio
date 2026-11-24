@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}{{ sample.sample_id }} · Validation{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.project_validation', project_id=project.id) }}">← Validaciones of the project</a>
+<section class="project-hero"><div><p class="eyebrow">DETALLE DE VALIDACIÓN · {{ run.id[:10] }}</p><h1>{{ sample.sample_id }}</h1><p class="hero-copy">Model: {{ run.model_run_id }}</p></div><span class="status-chip succeeded">{{ sample.cnv_detected_count }} CNV(s)</span></section>
+<section class="panel"><div class="metric-grid diagnostic-kpis"><article class="metric-card"><span>CNVs DETECTADAS</span><strong>{{ sample.cnv_detected_count }}</strong></article><article class="metric-card"><span>CNVs CONOCIDAS</span><strong>{{ sample.known_cnv_count }}</strong></article><article class="metric-card"><span>CNVs COINCIDENTES</span><strong>{{ sample.matched_known_cnv_count }}</strong></article><article class="metric-card"><span>CORRELACIÓN CON EL MODELO</span><strong>{{ '%.4f'|format(sample.model_correlation) if sample.model_correlation is not none else 'N/A' }}</strong></article></div></section>
+<section class="panel"><div class="panel-heading"><div><p class="eyebrow">COBERTURA NORMALIZADA POR INTERVALO</p><h2>Log₂ ratio denoised</h2><small>Cada point represents an interval of the panel. Las llamadas CNV is resaltan in rojo.</small></div></div><canvas id="validation-log2-chart" class="diagnostic-chart"></canvas><script type="application/json" id="validation-interval-data">{{ sample.log2_intervals|tojson }}</script><script type="application/json" id="validation-call-data">{{ sample.calls|tojson }}</script></section>
+<section class="panel"><div class="panel-heading"><div><p class="eyebrow">LLAMADAS GATK</p><h2>CNVs detected</h2></div></div><div class="table-scroll"><table class="diagnostic-table"><thead><tr><th>Chr</th><th>Start</th><th>End</th><th>Tipo</th><th>Copy number</th><th>Baseline CN</th><th>Genotipo</th><th>Quality</th><th>NP</th><th>QA</th><th>QS</th><th>QSE</th><th>QSS</th><th>Filter</th><th>Coincide with CNV annotated</th></tr></thead><tbody>{% for call in sample.calls %}<tr><td>{{ call.chrom }}</td><td>{{ call.start }}</td><td>{{ call.end }}</td><td>{{ call.type }}</td><td>{{ call.copy_number if call.copy_number is not none else 'N/A' }}</td><td>{{ call.baseline_copy_number }}</td><td>{{ call.genotype or 'N/A' }}</td><td>{{ call.quality if call.quality is not none else 'N/A' }}</td>{% for key in ['NP','QA','QS','QSE','QSS'] %}<td>{{ call.format.get(key, 'N/A') }}</td>{% endfor %}<td>{{ call.filter }}</td><td>{{ 'Sí' if call.matches_known else 'No' }}</td></tr>{% else %}<tr><td colspan="15">No is detectaron CNVs for this sample.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="panel"><div class="panel-heading"><div><p class="eyebrow">VERDAD DE REFERENCIA</p><h2>CNVs entered per the user</h2></div></div><div class="table-scroll"><table class="diagnostic-table"><thead><tr><th>Chr</th><th>Start</th><th>End</th><th>Tipo</th></tr></thead><tbody>{% for cnv in sample.known_cnvs %}<tr><td>{{ cnv.chrom }}</td><td>{{ cnv.start }}</td><td>{{ cnv.end }}</td><td>{{ cnv.type }}</td></tr>{% else %}<tr><td colspan="4">No is anotaron CNVs.</td></tr>{% endfor %}</tbody></table></div></section>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('validation-log2-chart');
+  if (!canvas) return;
+  const intervals = JSON.parse(document.getElementById('validation-interval-data')?.textContent || '[]');
+  const calls = JSON.parse(document.getElementById('validation-call-data')?.textContent || '[]');
+  if (!intervals.length) {
+    canvas.insertAdjacentHTML('afterend', '<p class="empty-inline">No there are values log₂ ratio available.</p>');
+    return;
+  }
+  const width = Math.max(760, Math.min(2200, intervals.length * 3));
+  const height = 320, pad = 42, ctx = canvas.getContext('2d');
+  canvas.width = width; canvas.height = height;
+  const values = intervals.map(row => row.log2_ratio);
+  const min = Math.min(-1, ...values), max = Math.max(1, ...values);
+  const x = index => pad + index * (width - 2 * pad) / Math.max(1, intervals.length - 1);
+  const y = value => height - pad - (value - min) * (height - 2 * pad) / (max - min || 1);
+  ctx.clearRect(0, 0, width, height);
+  ctx.strokeStyle = '#aab8ad'; ctx.beginPath(); ctx.moveTo(pad, y(0)); ctx.lineTo(width - pad, y(0)); ctx.stroke();
+  ctx.strokeStyle = '#43865c'; ctx.lineWidth = 1.5; ctx.beginPath();
+  intervals.forEach((row, index) => index ? ctx.lineTo(x(index), y(row.log2_ratio)) : ctx.moveTo(x(index), y(row.log2_ratio)));
+  ctx.stroke();
+  intervals.forEach((row, index) => {
+    const event = calls.some(call => call.chrom.replace(/^chr/i, '') === row.chrom.replace(/^chr/i, '') && call.start <= row.end && row.start <= call.end);
+    ctx.fillStyle = event ? '#c34c4c' : '#43865c';
+    ctx.beginPath(); ctx.arc(x(index), y(row.log2_ratio), event ? 2.8 : 1.8, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.fillStyle = '#53655a'; ctx.font = '12px sans-serif';
+  ctx.fillText('Log₂ ratio', pad, 18); ctx.fillText('Intervals ordenados per coordenada', pad, height - 10);
+  ctx.fillStyle = '#c34c4c'; ctx.fillRect(width - pad - 135, 10, 8, 8); ctx.fillStyle = '#53655a'; ctx.fillText('CNV detected', width - pad - 122, 19);
+});
+</script>
+{% endblock %}

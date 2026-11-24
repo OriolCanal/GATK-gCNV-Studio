@@ -1,0 +1,284 @@
+Nov-19 10:05:11.712 [main] DEBUG nextflow.cli.Launcher - $> nextflow run /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/sample_qc/main.nf -profile local -params-file /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_params.yaml -work-dir /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work -with-report /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_report.html -with-timeline /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_timeline.html -with-trace /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_trace.txt
+Nov-19 10:05:11.924 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 26.04.3
+Nov-19 10:05:11.967 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/home/ocanal/.nextflow/plugins; core-plugins: nf-amazon@3.9.1,nf-azure@1.22.5,nf-cloudcache@0.6.0,nf-codecommit@0.5.2,nf-console@1.3.0,nf-google@1.27.3,nf-k8s@1.5.4,nf-seqera@0.20.1,nf-tower@1.28.0,nf-wave@1.21.0
+Nov-19 10:05:12.050 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Nov-19 10:05:12.051 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Nov-19 10:05:12.055 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.14.1 in 'deployment' mode
+Nov-19 10:05:12.087 [main] DEBUG nextflow.util.RetryConfig - Missing nextflow session - using default retry config
+Nov-19 10:05:12.507 [main] DEBUG nextflow.plugin.PluginUpdater - Using plugin repository: HttpPluginRepository [registry]; url=https://registry.nextflow.io/api
+Nov-19 10:05:12.525 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Nov-19 10:05:12.733 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/nextflow.config
+Nov-19 10:05:12.738 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/nextflow.config
+Nov-19 10:05:12.744 [main] DEBUG nextflow.config.ConfigParserFactory - Using config parser v2
+Nov-19 10:05:12.782 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `local`
+Nov-19 10:05:13.460 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [local]
+Nov-19 10:05:13.563 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Nov-19 10:05:13.563 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Nov-19 10:05:13.594 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /home/ocanal/.nextflow/secrets/store.json
+Nov-19 10:05:13.598 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@6e3eb0cd] - activable => nextflow.secret.LocalSecretsProvider@6e3eb0cd
+Nov-19 10:05:13.623 [main] INFO  nextflow.cli.CmdRun - Launching `/home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/sample_qc/main.nf` [compassionate_shaw] - revision: 7859dc72d6
+Nov-19 10:05:13.739 [main] DEBUG nextflow.Session - Session UUID: 1a2d4d71-4cad-49b2-934a-0b773d04c657
+Nov-19 10:05:13.740 [main] DEBUG nextflow.Session - Run name: compassionate_shaw
+Nov-19 10:05:13.741 [main] DEBUG nextflow.Session - Executor pool size: 4
+Nov-19 10:05:13.755 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Nov-19 10:05:13.765 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=12; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+Nov-19 10:05:13.800 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 26.04.3 build 12259
+  Created: 28-05-2026 08:48 UTC (10:48 CEST)
+  System: Linux 6.8.0-138-generic
+  Runtime: Groovy 4.0.31 on OpenJDK 64-Bit Server VM 17.0.21.1+2-1-22.04.1-Ubuntu
+  Encoding: UTF-8 (UTF-8)
+  Process: 215886@ocanal-IDIBGI [127.0.1.1]
+  CPUs: 4 - Mem: 27.3 GB (1.6 GB) - Swap: 1.9 GB (8.2 MB)
+Nov-19 10:05:13.836 [main] DEBUG nextflow.Session - Work-dir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work [ext2/ext3]
+Nov-19 10:05:13.837 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/sample_qc/bin
+Nov-19 10:05:13.849 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Nov-19 10:05:13.865 [main] DEBUG nextflow.Session - Observer factory (v2): LinObserverFactory
+Nov-19 10:05:13.868 [main] DEBUG nextflow.Session - Observer factory (v2): DefaultObserverFactory
+Nov-19 10:05:13.912 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Nov-19 10:05:13.927 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 5; maxThreads: 1000
+Nov-19 10:05:14.019 [main] DEBUG nextflow.Session - Session start
+Nov-19 10:05:14.031 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow started -- trace file: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_trace.txt
+Nov-19 10:05:14.034 [main] DEBUG nextflow.script.ScriptLoaderFactory - Using script parser v2
+Nov-19 10:05:15.077 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Nov-19 10:05:15.586 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:sample_qc` matches labels `sample_qc` for process with name SAMPLE_QC:VALIDATE_SAM_FILE
+Nov-19 10:05:15.593 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Nov-19 10:05:15.594 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-19 10:05:15.615 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Nov-19 10:05:15.628 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=4; memory=27.3 GB; capacity=4; pollInterval=100ms; dumpInterval=5m
+Nov-19 10:05:15.633 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Nov-19 10:05:15.687 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'SAMPLE_QC:VALIDATE_SAM_FILE': maxForks=1; fair=false; array=0
+Nov-19 10:05:15.748 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:sample_qc` matches labels `sample_qc` for process with name SAMPLE_QC:COLLECT_READ_COUNTS
+Nov-19 10:05:15.752 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Nov-19 10:05:15.752 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-19 10:05:15.754 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'SAMPLE_QC:COLLECT_READ_COUNTS': maxForks=1; fair=false; array=0
+Nov-19 10:05:15.780 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:sample_qc` matches labels `sample_qc` for process with name SAMPLE_QC:COLLECT_HS_METRICS
+Nov-19 10:05:15.783 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Nov-19 10:05:15.784 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-19 10:05:15.785 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'SAMPLE_QC:COLLECT_HS_METRICS': maxForks=1; fair=false; array=0
+Nov-19 10:05:15.797 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:sample_qc` matches labels `sample_qc` for process with name SAMPLE_QC:FLAG_STAT
+Nov-19 10:05:15.801 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Nov-19 10:05:15.802 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-19 10:05:15.805 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'SAMPLE_QC:FLAG_STAT': maxForks=1; fair=false; array=0
+Nov-19 10:05:15.811 [main] DEBUG nextflow.Session - Process names: SAMPLE_QC:VALIDATE_SAM_FILE, VALIDATE_SAM_FILE, SAMPLE_QC:COLLECT_READ_COUNTS, SAMPLE_QC:BED_TO_INTERVAL_LIST, COLLECT_HS_METRICS, BED_TO_INTERVAL_LIST, SAMPLE_QC:COLLECT_HS_METRICS, SAMPLE_QC:FLAG_STAT, FLAG_STAT, COLLECT_READ_COUNTS
+Nov-19 10:05:15.814 [main] DEBUG nextflow.Session - Igniting dataflow network (5)
+Nov-19 10:05:15.821 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SAMPLE_QC:VALIDATE_SAM_FILE
+Nov-19 10:05:15.827 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SAMPLE_QC:COLLECT_READ_COUNTS
+Nov-19 10:05:15.828 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SAMPLE_QC:COLLECT_HS_METRICS
+Nov-19 10:05:15.829 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SAMPLE_QC:FLAG_STAT
+Nov-19 10:05:15.838 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  _nf_script_b9f535c0cba1f24a: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/modules/local/gatk/collect_read_counts.nf
+  _nf_script_5230565150d0006f: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/modules/local/gatk/flagstat.nf
+  _nf_script_84afa4a8238da673: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/modules/local/gatk/collect_hs_metrics.nf
+  _nf_script_d3589b3dcf6cac03: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/modules/local/gatk/bed_to_interval_list.nf
+  _nf_script_85165d8577c24c86: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/modules/local/gatk/validate_sam_file.nf
+  Main: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/sample_qc/main.nf
+  _nf_script_f92243e2f1ca4199: /home/ocanal/Desktop/apps/GATK-gCNV-cohort-creation3/workflows/subworkflows/sample_qc.nf
+Nov-19 10:05:15.841 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Nov-19 10:05:15.841 [main] DEBUG nextflow.Session - Session await
+Nov-19 10:05:15.988 [Actor Thread 8] DEBUG nextflow.container.SingularityCache - Apptainer found local store for image=docker://broadinstitute/gatk:4.7.0.0; path=/ngs-results/apptainer-cache/broadinstitute-gatk-4.7.0.0.img
+Nov-19 10:05:16.185 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:05:16.191 [Task submitter] INFO  nextflow.Session - [fe/5c3cd1] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41859)
+Nov-19 10:05:50.739 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41859); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/fe/5c3cd1111bcbd4586ed88c33fb648a]
+Nov-19 10:05:50.740 [Task monitor] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'TaskFinalizer' minSize=10; maxSize=12; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+Nov-19 10:05:50.753 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:05:50.780 [Task submitter] INFO  nextflow.Session - [e2/a6815b] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41862)
+Nov-19 10:05:50.841 [TaskFinalizer-1] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'PublishDir' minSize=10; maxSize=12; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+Nov-19 10:06:26.343 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 3; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41862); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/e2/a6815b6957228abc22dbc764e28756]
+Nov-19 10:06:26.350 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:06:26.368 [Task submitter] INFO  nextflow.Session - [80/e5c84b] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41861)
+Nov-19 10:07:01.450 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 2; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41861); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/80/e5c84bbde9d5a32a1af7cf389de08a]
+Nov-19 10:07:01.461 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:07:01.465 [Task submitter] INFO  nextflow.Session - [52/22ddfd] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41883)
+Nov-19 10:07:40.070 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 4; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41883); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/52/22ddfd2a6ac9edac50497844d6bf8d]
+Nov-19 10:07:40.085 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:07:40.085 [Task submitter] INFO  nextflow.Session - [09/d960f7] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41885)
+Nov-19 10:08:15.604 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 6; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41885); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/09/d960f70194e2e8b9b74bea14442f1a]
+Nov-19 10:08:15.630 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:08:15.634 [Task submitter] INFO  nextflow.Session - [a0/f0899a] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41884)
+Nov-19 10:08:55.434 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 5; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41884); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/a0/f0899aa76a5bbe6b30108c3c9b9f7d]
+Nov-19 10:08:55.476 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:08:55.488 [Task submitter] INFO  nextflow.Session - [db/aa83b7] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41886)
+Nov-19 10:09:30.255 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 7; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41886); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/db/aa83b7464c07ba618e9744e7f83865]
+Nov-19 10:09:30.270 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:09:30.271 [Task submitter] INFO  nextflow.Session - [a0/8d2e96] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41888)
+Nov-19 10:10:03.048 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 8; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41888); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/a0/8d2e96eaada31c02fe762065bd9d09]
+Nov-19 10:10:03.066 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:10:03.067 [Task submitter] INFO  nextflow.Session - [80/7a2c62] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41891)
+Nov-19 10:10:15.820 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 10; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41891); status: RUNNING; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/80/7a2c621c258f2d1d64384888e79af4]
+Nov-19 10:10:17.099 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor local > tasks in the submission queue: 76 -- tasks to be submitted are shown below
+~> TaskHandler[id: 9; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41889); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/df/db7d2a53fb40cdf4e0eebf01086bcc]
+~> TaskHandler[id: 11; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41895); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/5b/fefc6528bcccbf732fbd091830d7d3]
+~> TaskHandler[id: 12; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41915); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/2e/bfcc1b1d8bb36ecc52dcd5aede2394]
+~> TaskHandler[id: 13; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41916); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/b6/e3cdbf552ea2956f68b92c213e3312]
+~> TaskHandler[id: 15; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41920); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/00/8b8833845e5c03c16cb0e687f1ea56]
+~> TaskHandler[id: 14; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41919); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/77/3172ffdb86395cf062953fa6dfef7d]
+~> TaskHandler[id: 16; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41921); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/4f/7907b08decb2cfd29b6f1c1bddf18f]
+~> TaskHandler[id: 18; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41923); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/ca/cfee862778cdfe14badd6d5fdd6750]
+~> TaskHandler[id: 17; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41922); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/2a/d199883a519085fcb26f9b576a9da7]
+~> TaskHandler[id: 19; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41924); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/50/eed277f4ce02cb12ff455dd729e891]
+.. remaining tasks omitted.
+Nov-19 10:10:34.004 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 10; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41891); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/80/7a2c621c258f2d1d64384888e79af4]
+Nov-19 10:10:34.020 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:10:34.020 [Task submitter] INFO  nextflow.Session - [df/db7d2a] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41889)
+Nov-19 10:11:21.592 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 9; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41889); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/df/db7d2a53fb40cdf4e0eebf01086bcc]
+Nov-19 10:11:21.627 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:11:21.631 [Task submitter] INFO  nextflow.Session - [5b/fefc65] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41895)
+Nov-19 10:12:03.420 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 11; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41895); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/5b/fefc6528bcccbf732fbd091830d7d3]
+Nov-19 10:12:03.461 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:12:03.465 [Task submitter] INFO  nextflow.Session - [2e/bfcc1b] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41915)
+Nov-19 10:12:37.150 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 12; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41915); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/2e/bfcc1b1d8bb36ecc52dcd5aede2394]
+Nov-19 10:12:37.180 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:12:37.180 [Task submitter] INFO  nextflow.Session - [b6/e3cdbf] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41916)
+Nov-19 10:13:11.295 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 13; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41916); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/b6/e3cdbf552ea2956f68b92c213e3312]
+Nov-19 10:13:11.302 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:13:11.303 [Task submitter] INFO  nextflow.Session - [00/8b8833] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41920)
+Nov-19 10:13:47.416 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 15; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41920); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/00/8b8833845e5c03c16cb0e687f1ea56]
+Nov-19 10:13:47.422 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:13:47.423 [Task submitter] INFO  nextflow.Session - [77/3172ff] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41919)
+Nov-19 10:14:27.668 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 14; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41919); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/77/3172ffdb86395cf062953fa6dfef7d]
+Nov-19 10:14:27.692 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:14:27.695 [Task submitter] INFO  nextflow.Session - [4f/7907b0] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41921)
+Nov-19 10:15:04.490 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 16; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41921); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/4f/7907b08decb2cfd29b6f1c1bddf18f]
+Nov-19 10:15:04.501 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:15:04.504 [Task submitter] INFO  nextflow.Session - [ca/cfee86] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41923)
+Nov-19 10:15:15.861 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 18; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41923); status: RUNNING; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/ca/cfee862778cdfe14badd6d5fdd6750]
+Nov-19 10:15:17.555 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor local > tasks in the submission queue: 76 -- tasks to be submitted are shown below
+~> TaskHandler[id: 17; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41922); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/2a/d199883a519085fcb26f9b576a9da7]
+~> TaskHandler[id: 19; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41924); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/50/eed277f4ce02cb12ff455dd729e891]
+~> TaskHandler[id: 21; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42357); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/61/f1a666b52bb9039c1eec7f8f6d316c]
+~> TaskHandler[id: 20; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41925); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/13/fc1817f5aa007d8ff90d09b84563af]
+~> TaskHandler[id: 22; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42592); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/e6/fe81a04153711e98b3c3b08a380305]
+~> TaskHandler[id: 25; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42892); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/1b/7e520b48e6eff317b6c9d1cd350ea6]
+~> TaskHandler[id: 23; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42699); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/79/c061115b0276f67cfb8b0137d73cbb]
+~> TaskHandler[id: 24; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42790); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/3b/05edaf4d34baba50229da561dbbfc0]
+~> TaskHandler[id: 28; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43581); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/ca/cca089e7fc1734d751c6c5aabf1e73]
+~> TaskHandler[id: 27; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43528); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/67/ec1b21783dc62ac8f4cff4e5db07c4]
+.. remaining tasks omitted.
+Nov-19 10:15:46.162 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 18; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41923); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/ca/cfee862778cdfe14badd6d5fdd6750]
+Nov-19 10:15:46.168 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:15:46.168 [Task submitter] INFO  nextflow.Session - [2a/d19988] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41922)
+Nov-19 10:16:23.884 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 17; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41922); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/2a/d199883a519085fcb26f9b576a9da7]
+Nov-19 10:16:23.890 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:16:23.890 [Task submitter] INFO  nextflow.Session - [50/eed277] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41924)
+Nov-19 10:17:06.369 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 19; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41924); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/50/eed277f4ce02cb12ff455dd729e891]
+Nov-19 10:17:06.431 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:17:06.437 [Task submitter] INFO  nextflow.Session - [61/f1a666] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42357)
+Nov-19 10:18:13.442 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 21; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42357); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/61/f1a666b52bb9039c1eec7f8f6d316c]
+Nov-19 10:18:13.462 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:18:13.463 [Task submitter] INFO  nextflow.Session - [13/fc1817] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41925)
+Nov-19 10:19:04.098 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 20; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB41925); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/13/fc1817f5aa007d8ff90d09b84563af]
+Nov-19 10:19:04.108 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:19:04.109 [Task submitter] INFO  nextflow.Session - [e6/fe81a0] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42592)
+Nov-19 10:19:53.932 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 22; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42592); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/e6/fe81a04153711e98b3c3b08a380305]
+Nov-19 10:19:53.944 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:19:53.945 [Task submitter] INFO  nextflow.Session - [1b/7e520b] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42892)
+Nov-19 10:20:15.961 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 25; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42892); status: RUNNING; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/1b/7e520b48e6eff317b6c9d1cd350ea6]
+Nov-19 10:20:17.962 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor local > tasks in the submission queue: 76 -- tasks to be submitted are shown below
+~> TaskHandler[id: 23; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42699); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/79/c061115b0276f67cfb8b0137d73cbb]
+~> TaskHandler[id: 24; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42790); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/3b/05edaf4d34baba50229da561dbbfc0]
+~> TaskHandler[id: 28; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43581); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/ca/cca089e7fc1734d751c6c5aabf1e73]
+~> TaskHandler[id: 27; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43528); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/67/ec1b21783dc62ac8f4cff4e5db07c4]
+~> TaskHandler[id: 29; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43582); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/51/386ea0e547b7fcc57922f7d89cae13]
+~> TaskHandler[id: 26; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42939); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/9c/958c2852f73aee561341544fee6b71]
+~> TaskHandler[id: 30; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43585); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/01/382d42176735a5435aa3514306efd2]
+~> TaskHandler[id: 32; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43589); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/6f/662160524700b3033b1475d9b46f80]
+~> TaskHandler[id: 31; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43588); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/3d/b5ee39514e6c2b387ea94cff356145]
+~> TaskHandler[id: 33; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43590); status: NEW; exit: -; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/1d/782374c1edf96f296963cfa5b143a6]
+.. remaining tasks omitted.
+Nov-19 10:20:48.208 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 25; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42892); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/1b/7e520b48e6eff317b6c9d1cd350ea6]
+Nov-19 10:20:48.216 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:20:48.218 [Task submitter] INFO  nextflow.Session - [79/c06111] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42699)
+Nov-19 10:21:36.111 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 23; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42699); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/79/c061115b0276f67cfb8b0137d73cbb]
+Nov-19 10:21:36.119 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:21:36.119 [Task submitter] INFO  nextflow.Session - [3b/05edaf] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42790)
+Nov-19 10:22:19.743 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 24; name: SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB42790); status: COMPLETED; exit: 0; error: -; workDir: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/cohort_qc/f05d56a58ce14fd1ba56bf876b5cf6a6/work/3b/05edaf4d34baba50229da561dbbfc0]
+Nov-19 10:22:19.751 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-19 10:22:19.752 [Task submitter] INFO  nextflow.Session - [ca/cca089] Submitted process > SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43581)
+Nov-19 10:23:14.631 [SIGTERM handler] DEBUG nextflow.Session - Session aborted -- Cause: SIGTERM
+Nov-19 10:23:14.665 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Nov-19 10:23:14.728 [SIGTERM handler] DEBUG nextflow.Session - The following nodes are still active:
+[process] SAMPLE_QC:COLLECT_READ_COUNTS
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: -
+  port 1: (cntrl) -     ; channel: $
+
+[process] SAMPLE_QC:COLLECT_HS_METRICS
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: -
+  port 1: (cntrl) -     ; channel: $
+
+[process] SAMPLE_QC:FLAG_STAT
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: -
+  port 1: (cntrl) -     ; channel: $
+
+Nov-19 10:23:14.808 [SIGTERM handler] WARN  n.processor.TaskPollingMonitor - Killing running tasks (1)
+Nov-19 10:23:14.834 [SIGTERM handler] DEBUG n.executor.local.LocalTaskHandler - Unable to kill SAMPLE_QC:VALIDATE_SAM_FILE (ValidateSamFile · RB43581) -- command: kill -TERM 263010; exit: 1 
+ bash: line 1: kill: (263010) - No such process
+
+Nov-19 10:23:14.854 [SIGTERM handler] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=25; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=76; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=1; succeedDuration=1h 7m 38s; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=2; peakCpus=8; peakMemory=30 GB; ]
+Nov-19 10:23:14.855 [SIGTERM handler] DEBUG nextflow.trace.ReportObserver - Workflow completed -- rendering execution report
+Nov-19 10:23:16.046 [SIGTERM handler] DEBUG nextflow.trace.TimelineObserver - Workflow completed -- rendering execution timeline
+Nov-19 10:23:16.133 [SIGTERM handler] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
+Nov-19 10:23:16.145 [main] DEBUG nextflow.Session - Session await > all processes finished
+Nov-19 10:23:16.145 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Nov-19 10:23:16.148 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=25; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=76; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=1; succeedDuration=1h 7m 38s; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=2; peakCpus=8; peakMemory=30 GB; ]
+Nov-19 10:23:16.149 [main] DEBUG nextflow.trace.ReportObserver - Workflow completed -- rendering execution report
+Nov-19 10:23:16.569 [main] WARN  nextflow.trace.ReportObserver - Failed to render execution report -- see the log file for details
+nextflow.exception.AbortOperationException: Report file already exists: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_report.html -- enable the 'report.overwrite' option in your config file to overwrite existing files
+	at nextflow.trace.TraceHelper.newFileWriter(TraceHelper.groovy:66)
+	at nextflow.trace.ReportObserver.renderHtml(ReportObserver.groovy:243)
+	at nextflow.trace.ReportObserver.onFlowComplete(ReportObserver.groovy:129)
+	at nextflow.Session$_notifyFlowComplete_lambda38.doCall(Session.groovy:1093)
+	at nextflow.Session.notifyEvent(Session.groovy:1123)
+	at nextflow.Session.notifyFlowComplete(Session.groovy:1093)
+	at nextflow.Session.shutdown0(Session.groovy:775)
+	at nextflow.Session.destroy(Session.groovy:720)
+	at nextflow.script.ScriptRunner.shutdown(ScriptRunner.groovy:244)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:136)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:442)
+	at nextflow.cli.Launcher.run(Launcher.groovy:526)
+	at nextflow.cli.Launcher.main(Launcher.groovy:686)
+Caused by: java.nio.file.FileAlreadyExistsException: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_report.html
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:94)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:218)
+	at java.base/java.nio.file.spi.FileSystemProvider.newOutputStream(FileSystemProvider.java:484)
+	at java.base/java.nio.file.Files.newOutputStream(Files.java:228)
+	at java.base/java.nio.file.Files.newBufferedWriter(Files.java:3008)
+	at nextflow.trace.TraceHelper.newFileWriter(TraceHelper.groovy:63)
+	... 12 common frames omitted
+Nov-19 10:23:16.572 [main] DEBUG nextflow.trace.TimelineObserver - Workflow completed -- rendering execution timeline
+Nov-19 10:23:16.631 [main] WARN  nextflow.trace.TimelineObserver - Failed to render execution timeline -- see the log file for details
+nextflow.exception.AbortOperationException: Timeline file already exists: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_timeline.html -- enable the 'timeline.overwrite' option in your config file to overwrite existing files
+	at nextflow.trace.TraceHelper.newFileWriter(TraceHelper.groovy:66)
+	at nextflow.trace.TimelineObserver.renderHtml(TimelineObserver.groovy:164)
+	at nextflow.trace.TimelineObserver.onFlowComplete(TimelineObserver.groovy:91)
+	at nextflow.Session$_notifyFlowComplete_lambda38.doCall(Session.groovy:1093)
+	at nextflow.Session.notifyEvent(Session.groovy:1123)
+	at nextflow.Session.notifyFlowComplete(Session.groovy:1093)
+	at nextflow.Session.shutdown0(Session.groovy:775)
+	at nextflow.Session.destroy(Session.groovy:720)
+	at nextflow.script.ScriptRunner.shutdown(ScriptRunner.groovy:244)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:136)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:442)
+	at nextflow.cli.Launcher.run(Launcher.groovy:526)
+	at nextflow.cli.Launcher.main(Launcher.groovy:686)
+Caused by: java.nio.file.FileAlreadyExistsException: /ngs-results/GATK-gCNV-models/agilent_global_2_analysis_20261118/samples/qc/1805fb8e17824cd5bff789724be7633a/nextflow_timeline.html
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:94)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:218)
+	at java.base/java.nio.file.spi.FileSystemProvider.newOutputStream(FileSystemProvider.java:484)
+	at java.base/java.nio.file.Files.newOutputStream(Files.java:228)
+	at java.base/java.nio.file.Files.newBufferedWriter(Files.java:3008)
+	at nextflow.trace.TraceHelper.newFileWriter(TraceHelper.groovy:63)
+	... 12 common frames omitted
+Nov-19 10:23:16.632 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
+Nov-19 10:23:16.642 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Nov-19 10:23:16.683 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

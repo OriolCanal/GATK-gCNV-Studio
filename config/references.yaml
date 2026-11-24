@@ -1,0 +1,23 @@
+# Registrar aquí las rutas de los bundles preparados en el servidor.
+# El catálogo solo ofrece referencias cuyos ficheros obligatorios existen.
+references:
+  GRCh37:
+    label: GRCh37
+    bundle_version: "1"
+    fasta: "/home/ocanal/REF_DIR/hg19/ucsc.hg19.fasta"
+    fai: "/home/ocanal/REF_DIR/hg19/ucsc.hg19.fasta.fai"
+    dict: "/home/ocanal/REF_DIR/hg19/ucsc.hg19.dict"
+    aliases: {}
+    mappability_track: "/home/ocanal/REF_DIR/hg19/k50.umap.bed"
+    mappability_read_length: "50"
+    segmental_duplication_track: "/home/ocanal/REF_DIR/hg19/segmental_duplications.hg19.merged.bed"
+  GRCh38:
+    label: GRCh38
+    bundle_version: "1"
+    fasta: "/home/ocanal/REF_DIR/hg38/hg38.analysisSet.fasta"
+    fai: "/home/ocanal/REF_DIR/hg38/hg38.analysisSet.fasta.fai"
+    dict: "/home/ocanal/REF_DIR/hg38/hg38.analysisSet.dict"
+    aliases: {}
+    mappability_track: "/home/ocanal/REF_DIR/hg38/k50.umap.bed.gz"
+    mappability_read_length: "50"
+    segmental_duplication_track: "/home/ocanal/REF_DIR/hg38/segmental_duplications.hg38.merged.bed"

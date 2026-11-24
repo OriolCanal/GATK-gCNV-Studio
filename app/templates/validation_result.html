@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Validation BED · gCNV Baseline Studio{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.index') }}">← Back</a>
+<section class="panel validation-panel"><p class="eyebrow">VALIDACIÓN BED</p><h1>El file needs corrections</h1><p>Se conservó the report of validation in the storage. Corrige the errors and vuelve to upload the BED.</p><ul>{% for error in report.errors %}<li>{% if error.line %}Line {{ error.line }}: {% endif %}{{ error.message }}</li>{% endfor %}</ul><a class="button secondary" href="{{ url_for('main.index') }}">Back to projects</a></section>
+{% endblock %}
